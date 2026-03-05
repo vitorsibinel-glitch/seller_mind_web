@@ -15,6 +15,7 @@ COPY packages/mongodb/package.json ./packages/mongodb/package.json
 COPY packages/redis/package.json ./packages/redis/package.json
 COPY packages/amazon-ads/package.json ./packages/amazon-ads/package.json
 COPY packages/amazon-sp/package.json ./packages/amazon-sp/package.json
+COPY packages/billing/package.json ./packages/billing/package.json
 COPY apps/web/package.json ./apps/web/package.json
 
 # Copy .npmrc for proper configuration
@@ -35,6 +36,7 @@ COPY packages/mongodb ./packages/mongodb
 COPY packages/redis ./packages/redis
 COPY packages/amazon-ads ./packages/amazon-ads
 COPY packages/amazon-sp ./packages/amazon-sp
+COPY packages/billing ./packages/billing
 # Copy the web app and root files
 COPY apps/web ./apps/web
 COPY turbo.json ./turbo.json
