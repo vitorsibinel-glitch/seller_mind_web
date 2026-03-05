@@ -1,5 +1,4 @@
 import { SubscriptionModel } from "@workspace/mongodb/models/subscription";
-import { BillingInvoiceModel } from "@workspace/mongodb/models/billing-invoice";
 import { PlanModel } from "@workspace/mongodb/models/plan";
 import type { BillingCycle } from "@workspace/mongodb/models/subscription";
 
@@ -18,7 +17,7 @@ export const BillingService = {
     customerId: string,
     planId: string,
     billingCycle: BillingCycle,
-  ) {
+  ): Promise<Record<string, unknown>> {
     const plan = await PlanModel.findById(planId).lean();
     if (!plan) throw new Error("Plano não encontrado");
 
@@ -42,10 +41,10 @@ export const BillingService = {
       retryCount: 0,
     });
 
-    return subscription;
+    return subscription.toObject();
   },
 
-  async cancelSubscription(subscriptionId: string, reason?: string) {
+  async cancelSubscription(subscriptionId: string, reason?: string): Promise<Record<string, unknown>> {
     const subscription = await SubscriptionModel.findByIdAndUpdate(
       subscriptionId,
       {
@@ -54,13 +53,13 @@ export const BillingService = {
         cancelReason: reason,
       },
       { new: true },
-    );
+    ).lean();
 
     if (!subscription) throw new Error("Assinatura não encontrada");
-    return subscription;
+    return subscription as Record<string, unknown>;
   },
 
-  async reactivateSubscription(subscriptionId: string) {
+  async reactivateSubscription(subscriptionId: string): Promise<Record<string, unknown>> {
     const subscription = await SubscriptionModel.findByIdAndUpdate(
       subscriptionId,
       {
@@ -69,13 +68,14 @@ export const BillingService = {
         cancelReason: null,
       },
       { new: true },
-    );
+    ).lean();
 
     if (!subscription) throw new Error("Assinatura não encontrada");
-    return subscription;
+    return subscription as Record<string, unknown>;
   },
 
-  async getSubscriptionsByCustomer(billingAccountId: string) {
-    return SubscriptionModel.find({ billingAccountId }).lean();
+  async getSubscriptionsByCustomer(billingAccountId: string): Promise<Record<string, unknown>[]> {
+    const subscriptions = await SubscriptionModel.find({ billingAccountId }).lean();
+    return subscriptions as Record<string, unknown>[];
   },
 };
