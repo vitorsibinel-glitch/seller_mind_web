@@ -6,8 +6,7 @@
   "types": "./src/index.ts",
   "dependencies": {
     "@workspace/mongodb": "workspace:*",
-    "mongoose": "^8.19.2",
-    "@workspace/redis": "workspace:*"
+    "mongoose": "^8.19.2"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:^",
