@@ -5,6 +5,12 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "dependencies": {
-    "mongoose": "*"
+    "@workspace/mongodb": "workspace:*",
+    "mongoose": "^8.19.2",
+    "@workspace/redis": "workspace:*"
+  },
+  "devDependencies": {
+    "@workspace/eslint-config": "workspace:^",
+    "@workspace/typescript-config": "workspace:*"
   }
 }
