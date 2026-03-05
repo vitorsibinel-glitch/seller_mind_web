@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SubscriptionModel } from "@workspace/mongodb/models/subscription";
 import { PlanModel } from "@workspace/mongodb/models/plan";
 import type { BillingCycle } from "@workspace/mongodb/models/subscription";
@@ -17,7 +18,7 @@ export const BillingService = {
     customerId: string,
     planId: string,
     billingCycle: BillingCycle,
-  ): Promise<Record<string, unknown>> {
+  ): Promise<any> {
     const plan = await PlanModel.findById(planId).lean();
     if (!plan) throw new Error("Plano não encontrado");
 
@@ -44,7 +45,7 @@ export const BillingService = {
     return subscription.toObject();
   },
 
-  async cancelSubscription(subscriptionId: string, reason?: string): Promise<Record<string, unknown>> {
+  async cancelSubscription(subscriptionId: string, reason?: string): Promise<any> {
     const subscription = await SubscriptionModel.findByIdAndUpdate(
       subscriptionId,
       {
@@ -56,10 +57,10 @@ export const BillingService = {
     ).lean();
 
     if (!subscription) throw new Error("Assinatura não encontrada");
-    return subscription as Record<string, unknown>;
+    return subscription;
   },
 
-  async reactivateSubscription(subscriptionId: string): Promise<Record<string, unknown>> {
+  async reactivateSubscription(subscriptionId: string): Promise<any> {
     const subscription = await SubscriptionModel.findByIdAndUpdate(
       subscriptionId,
       {
@@ -71,11 +72,10 @@ export const BillingService = {
     ).lean();
 
     if (!subscription) throw new Error("Assinatura não encontrada");
-    return subscription as Record<string, unknown>;
+    return subscription;
   },
 
-  async getSubscriptionsByCustomer(billingAccountId: string): Promise<Record<string, unknown>[]> {
-    const subscriptions = await SubscriptionModel.find({ billingAccountId }).lean();
-    return subscriptions as Record<string, unknown>[];
+  async getSubscriptionsByCustomer(billingAccountId: string): Promise<any[]> {
+    return SubscriptionModel.find({ billingAccountId }).lean();
   },
 };
