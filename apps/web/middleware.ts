@@ -42,10 +42,10 @@ export async function middleware(req: NextRequest) {
     "/api/finances/invoices",
     "/api/finances/expenses",
     "/api/subscriptions",
-    "/api/subscriptions/intent",
     "/api/subscriptions/status",
     "/api/subscriptions/me",
     "/api/plans",
+    "/api/checkout/eduzz",
   ];
   const isProtectedApi = protectedApiRoutes.some((route) =>
     pathname.startsWith(route),
@@ -158,11 +158,11 @@ export const config = {
     "/api/gamification/:path*",
     "/api/finances/:path*",
     "/api/subscriptions",
-    "/api/subscriptions/intent",
     "/api/subscriptions/status",
     "/api/subscriptions/me",
     "/api/subscriptions/:path*",
     "/api/plans",
     "/api/plans/:path*",
+    "/api/checkout/eduzz",
   ],
 };

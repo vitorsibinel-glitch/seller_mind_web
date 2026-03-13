@@ -14,8 +14,8 @@ const envSchema = z.object({
   SP_API_CLIENT_SECRET: z.string().default(""),
   REDIS_URL: z.string().default(""),
   SP_APPLICATION_ID: z.string().default(""),
-  DIG2PAY_BASE_URL: z.string().default("https://payments.dig2pay.com"),
-  ULTRALINKS_ACCESS_TOKEN: z.string().default(""),
+  EDUZZ_API_TOKEN: z.string().default(""),
+  EDUZZ_WEBHOOK_SECRET: z.string().default(""),
   NODE_ENV: z.enum(["development", "production", "test"]).default("production"),
 });
 

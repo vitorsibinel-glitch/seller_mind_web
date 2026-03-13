@@ -1,42 +1,57 @@
 import { withDB } from "@/lib/mongoose";
-import { BillingAccountModel } from "@workspace/mongodb/models/billing-account";
-import {
-  SubscriptionModel,
-  SubscriptionStatus,
-} from "@workspace/mongodb/models/subscription";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { BillingAccountModel } from "@workspace/mongodb/models/billing-account";
+import { SubscriptionModel, SubscriptionStatus } from "@workspace/mongodb/models/subscription";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   return withDB(async () => {
     const userId = req.headers.get("x-user-id");
-
     if (!userId) {
       return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
     }
 
-    const billingAccount = await BillingAccountModel.findOne({
-      userId,
-      isActive: true,
-    }).lean();
-
+    const billingAccount = await BillingAccountModel.findOne({ userId });
     if (!billingAccount) {
-      return NextResponse.json({ hasActiveSubscription: false });
+      return NextResponse.json({ hasAccess: false, status: "no_account" });
+    }
+
+    const subscription = await SubscriptionModel.findOne({
+      billingAccountId: billingAccount._id,
+    }).sort({ createdAt: -1 });
+
+    if (!subscription) {
+      return NextResponse.json({ hasAccess: false, status: "no_subscription" });
     }
 
     const now = new Date();
 
-    const subscription = await SubscriptionModel.findOne({
-      billingAccountId: billingAccount._id,
-      $or: [
-        {
-          status: {
-            $in: [SubscriptionStatus.ACTIVE, SubscriptionStatus.TRIALING],
-          },
-        },
-        { status: SubscriptionStatus.CANCELED, currentPeriodEnd: { $gt: now } },
-      ],
-    });
+    if (
+      subscription.status === SubscriptionStatus.TRIALING &&
+      subscription.trialEnd &&
+      subscription.trialEnd > now
+    ) {
+      return NextResponse.json({
+        hasAccess: true,
+        status: "trialing",
+        trialEnd: subscription.trialEnd,
+        planId: subscription.planId || null,
+      });
+    }
 
-    return NextResponse.json({ hasActiveSubscription: !!subscription });
+    if (subscription.status === SubscriptionStatus.ACTIVE) {
+      return NextResponse.json({
+        hasAccess: true,
+        status: "active",
+        planId: subscription.planId,
+        currentPeriodEnd: subscription.currentPeriodEnd,
+      });
+    }
+
+    return NextResponse.json({
+      hasAccess: false,
+      status: subscription.status,
+      planId: subscription.planId || null,
+    });
   });
 }

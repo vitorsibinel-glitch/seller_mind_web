@@ -8,6 +8,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import type { Plan } from "@workspace/mongodb/models/plan";
 import { Button } from "@workspace/ui/components/button";
 import { useAuth } from "@/contexts/auth-context";
+import { toast } from "sonner";
 
 interface PlanWithId extends Plan {
   _id: string;
@@ -198,9 +199,22 @@ export default function PlansPage() {
   const basicPlans = allPlans.filter((p) => p.tier === "basic");
   const advancedPlans = allPlans.filter((p) => p.tier === "advanced");
 
-  const handleSelectPlan = (slug: string) => {
-    localStorage.setItem("selected_plan", slug);
-    router.push("/checkout");
+  const handleSelectPlan = async (slug: string) => {
+    try {
+      const res = await fetch(
+        `/api/checkout/eduzz?planSlug=${slug}&billingCycle=${billing}`,
+      );
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Erro ao gerar checkout");
+        return;
+      }
+
+      window.location.href = data.checkoutUrl;
+    } catch {
+      toast.error("Erro ao redirecionar para pagamento");
+    }
   };
 
   return (

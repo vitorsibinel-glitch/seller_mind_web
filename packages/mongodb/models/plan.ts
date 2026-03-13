@@ -26,6 +26,10 @@ export interface Plan {
   trialDays: number;
   sortOrder: number;
   isPopular: boolean; // para destacar o plano mais popular
+  eduzzProductId?: {
+    monthly?: string;
+    annual?: string;
+  };
 
   limits: {
     maxOrders?: number;
@@ -72,6 +76,10 @@ const planSchema = new mongoose.Schema<PlanDocument>(
     trialDays: { type: Number, default: 20, min: 0 }, // 20 dias grátis
     sortOrder: { type: Number, default: 0 },
     isPopular: { type: Boolean, default: false },
+    eduzzProductId: {
+      monthly: { type: String },
+      annual: { type: String },
+    },
 
     limits: {
       maxOrders: { type: Number, required: false, min: 0 },

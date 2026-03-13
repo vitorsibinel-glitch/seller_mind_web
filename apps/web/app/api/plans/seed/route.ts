@@ -131,33 +131,36 @@ export async function GET(): Promise<NextResponse> {
     for (const plan of allPlans) {
       const slug = slugify(plan.name);
 
-      const exists = await PlanModel.findOne({ slug }).lean();
-
-      if (exists) {
-        skipped.push(plan.name);
-        continue;
-      }
-
-      await PlanModel.create({
-        name: plan.name,
-        slug,
-        tier: plan.tier,
-        description: "",
-        features,
-        prices: {
-          monthly: plan.price,
-          annual: Math.round(plan.price * 12 * 0.8), // 20% desconto anual
+      await PlanModel.findOneAndUpdate(
+        { slug },
+        {
+          $set: {
+            name: plan.name,
+            slug,
+            tier: plan.tier,
+            description: "",
+            features,
+            prices: {
+              monthly: plan.price,
+              annual: Math.round(plan.price * 12 * 0.8), // 20% desconto anual
+            },
+            currency: "BRL",
+            isActive: true,
+            trialDays: 20,
+            sortOrder: plan.sortOrder,
+            isPopular: !!plan.popular,
+            limits: {
+              maxOrders: extractMaxOrders(plan.range),
+              gamificationBonus: parseNumber(plan.gamification),
+            },
+            eduzzProductId: {
+              monthly: "TODO_EDUZZ_ID",
+              annual: "TODO_EDUZZ_ID",
+            },
+          },
         },
-        currency: "BRL",
-        isActive: true,
-        trialDays: 20,
-        sortOrder: plan.sortOrder,
-        isPopular: !!plan.popular,
-        limits: {
-          maxOrders: extractMaxOrders(plan.range),
-          gamificationBonus: parseNumber(plan.gamification),
-        },
-      });
+        { upsert: true, new: true },
+      );
 
       created.push(plan.name);
     }

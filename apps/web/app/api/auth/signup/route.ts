@@ -5,6 +5,7 @@ import argon2 from "argon2";
 import { signupSchema } from "@/schemas/signupSchema";
 import { UserModel } from "@workspace/mongodb/models/user";
 import { BillingAccountModel } from "@workspace/mongodb/models/billing-account";
+import { SubscriptionModel, SubscriptionStatus } from "@workspace/mongodb/models/subscription";
 
 export async function POST(req: Request) {
   return withDB(async () => {
@@ -41,11 +42,20 @@ export async function POST(req: Request) {
       passwordHash,
     });
 
-    await BillingAccountModel.create({
+    const billingAccount = await BillingAccountModel.create({
       userId: user._id,
       name: `${firstName} ${lastName}`,
       email,
       document: "", // pode ser preenchido depois pelo usuário
+    });
+
+    const trialEnd = new Date();
+    trialEnd.setDate(trialEnd.getDate() + 20);
+
+    await SubscriptionModel.create({
+      billingAccountId: billingAccount._id,
+      status: SubscriptionStatus.TRIALING,
+      trialEnd,
     });
 
     return NextResponse.json(
