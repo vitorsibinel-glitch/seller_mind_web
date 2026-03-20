@@ -119,7 +119,7 @@ export async function proccessResultsService(
     ticketAverageNet: 0,
   };
 
-  const skuMap = new Map<string, { sku: string; quantity: number }>();
+  const skuMap = new Map<string, { sku: string; quantity: number; revenue: number }>();
 
   const [spClient, spErr] = await AmazonSPClient(storeId);
   if (spErr) {
@@ -155,10 +155,15 @@ export async function proccessResultsService(
       const sku = item?.SellerSKU ?? item?.SKU ?? null;
       const quantity =
         Number(item?.QuantityOrdered || item?.QuantityShipped) || 0;
+      const itemRevenue = Number(item?.ItemPrice?.Amount || 0);
       if (!sku) continue;
       const existing = skuMap.get(sku);
-      if (existing) existing.quantity += quantity;
-      else skuMap.set(sku, { sku, quantity });
+      if (existing) {
+        existing.quantity += quantity;
+        existing.revenue += itemRevenue;
+      } else {
+        skuMap.set(sku, { sku, quantity, revenue: itemRevenue });
+      }
     }
   }
 
@@ -198,7 +203,7 @@ export async function proccessResultsService(
 }
 
 async function calculateTotals(
-  skuMap: Map<string, { sku: string; quantity: number }>,
+  skuMap: Map<string, { sku: string; quantity: number; revenue: number }>,
   storeId: string,
   spClient: any
 ): Promise<{
@@ -239,18 +244,19 @@ async function calculateTotals(
   for (const [externalSku, data] of skuMap) {
     const product = productMap.get(externalSku);
     if (product) {
+      const unitPrice = data.quantity > 0 ? data.revenue / data.quantity : product.price;
       try {
         const feesObj = await getEstimatedFeesBySku(
           spClient,
           externalSku,
-          product.price
+          unitPrice
         );
         const feesPerUnit = Number(feesObj?.totalFees || 0);
         totalFees += feesPerUnit * data.quantity;
       } catch (err) {
         console.warn(`Erro ao calcular fees para SKU ${externalSku}:`, err);
       }
-      totalRevenue += product.price * data.quantity;
+      totalRevenue += data.revenue;
       totalCost += product.cost * data.quantity;
     } else {
       missingSkus.push(externalSku);
