@@ -1,0 +1,19 @@
+{
+  "extends": "@workspace/typescript-config/react-library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@workspace/ui/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    ".",
+    "../../apps/web/components/store-switcher.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

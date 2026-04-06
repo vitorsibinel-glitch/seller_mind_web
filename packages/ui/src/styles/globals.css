@@ -1,0 +1,271 @@
+@import "tailwindcss";
+@source "../../../apps/**/*.{ts,tsx}";
+@source "../../../components/**/*.{ts,tsx}";
+@source "../**/*.{ts,tsx}";
+
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  /* 🔔 Alert (warning) */
+  --warning: #facc15; /* amarelo vibrante */
+  --warning-foreground: #1a1a1a; /* texto escuro para contraste */
+
+  /* ✅ Success */
+  --success: #16a34a; /* verde médio */
+  --success-foreground: #ffffff; /* texto branco */
+
+  /* ℹ️ Info / Atenção */
+  --info: #0ea5e9; /* azul médio */
+  --info-foreground: #ffffff;
+
+  /* 🔴 Danger */
+  --danger: #dc2626; /* vermelho médio-escuro */
+  --danger-foreground: #ffffff; /* texto branco para contraste */
+}
+
+.dark {
+  /* 🌑 Background e Foreground - baseado em HSL 222 47% */
+  --background: #0d1117; /* HSL 222 47% 8% convertido */
+  --foreground: #e4e7ec; /* HSL 213 31% 91% convertido */
+
+  /* 📦 Card */
+  --card: #1a1e2e; /* HSL 222 40% 12% convertido */
+  --card-foreground: #e4e7ec;
+
+  /* 🎯 Popover */
+  --popover: #1a1e2e;
+  --popover-foreground: #e4e7ec;
+
+  /* 🟣 Primary - roxo HSL 256 67% 65% */
+  --primary: #9d6cdb; /* HSL 256 67% 65% convertido */
+  --primary-foreground: #ffffff;
+
+  /* 🔮 Secondary - tom escuro HSL 222 30% 16% */
+  --secondary: #21252f;
+  --secondary-foreground: #dfe2e7;
+
+  /* 💜 Tertiary - mantido como antes */
+  --tertiary: #6651c2;
+  --tertiary-foreground: #ffffff;
+
+  /* ⚫ Neutral */
+  --neutral: #2d2d2d;
+  --neutral-foreground: #ffffff;
+
+  /* 🔇 Muted - HSL 222 30% 16% */
+  --muted: #21252f;
+  --muted-foreground: #8892a6; /* HSL 215 16% 55% convertido */
+
+  /* ✨ Accent - roxo escuro HSL 256 35% 20% */
+  --accent: #362951;
+  --accent-foreground: #cdb4f0; /* HSL 256 70% 80% convertido */
+
+  /* 🔥 Destructive - HSL 0 62% 45% */
+  --destructive: #ba2525;
+  --destructive-foreground: #ffffff;
+
+  /* 📐 Borders e Inputs - HSL 222 25% 17% */
+  --border: #222935;
+  --input: #222935;
+  --ring: #9d6cdb; /* HSL 256 67% 65% - match primary */
+
+  /* 📊 Gráficos - baseados no segundo arquivo */
+  --chart-1: #9d6cdb; /* HSL 256 67% 65% - roxo */
+  --chart-2: #42a08c; /* HSL 173 58% 45% - verde-azulado */
+  --chart-3: #f6a623; /* HSL 38 92% 55% - laranja */
+  --chart-4: #f04e6e; /* HSL 346 77% 55% - vermelho-rosa */
+  --chart-5: #4a9bdb; /* HSL 210 70% 55% - azul */
+
+  /* 📂 Sidebar - tons muito escuros HSL 222 47% 6% */
+  --sidebar: #0f1117; /* HSL 222 47% 6% convertido */
+  --sidebar-foreground: #8892a6;
+
+  --sidebar-primary: #9d6cdb;
+  --sidebar-primary-foreground: #ffffff;
+
+  --sidebar-accent: #2a2240; /* HSL 256 35% 16% convertido */
+  --sidebar-accent-foreground: #cdb4f0;
+
+  --sidebar-border: #181c27; /* HSL 222 25% 13% convertido */
+  --sidebar-ring: #9d6cdb;
+
+  /* 🔔 Alert (warning) - HSL 38 92% 55% */
+  --warning: #f6a623;
+  --warning-foreground: #1a1a1a;
+
+  /* ✅ Success - HSL 152 55% 48% */
+  --success: #37ba76;
+  --success-foreground: #ffffff;
+
+  /* ℹ️ Info */
+  --info: #38bdf8;
+  --info-foreground: #1a1a1a;
+
+  /* 🔴 Danger */
+  --danger: #ef4444;
+  --danger-foreground: #1a1a1a;
+}
+
+.light {
+  /* Fundo principal suave */
+  --background: #f1f1f1; /* quase branco, suave aos olhos */
+  --foreground: #1a1a1a; /* texto escuro para contraste */
+
+  --card: #ffffff; /* branco puro para cards */
+  --card-foreground: #1a1a1a;
+
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+
+  /* Primárias e secundárias permanecem */
+  --primary: #7f3fbf;
+  --primary-foreground: #ffffff;
+
+  --secondary: #c3a7e5;
+  --secondary-foreground: #1a1a1a;
+
+  --tertiary: #6651c2;
+  --tertiary-foreground: #ffffff;
+
+  /* Neutros e acentos */
+  --neutral: #e5e5e5; /* neutro suave */
+  --neutral-foreground: #1a1a1a;
+
+  --muted: #f0f0f0; /* para elementos secundários */
+  --muted-foreground: #4a4a4a;
+
+  --accent: #c3a7e5;
+  --accent-foreground: #1a1a1a;
+
+  --destructive: #e53e3e;
+  --destructive-foreground: #ffffff;
+
+  --border: #dcdcdc;
+  --input: #f5f5f5;
+  --ring: #805ad5;
+
+  /* Sidebar e UI */
+  --sidebar: #f9f9f9;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #7f3fbf;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #c3a7e5;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #e0e0e0;
+  --sidebar-ring: #805ad5;
+
+  /* 🔔 Alert (warning) */
+  --warning: #facc15; /* amarelo forte */
+  --warning-foreground: #1a1a1a;
+
+  /* ✅ Success */
+  --success: #16a34a; /* verde médio */
+  --success-foreground: #ffffff;
+
+  /* ℹ️ Info */
+  --info: #0ea5e9; /* azul médio */
+  --info-foreground: #ffffff;
+
+  /* 🔴 Danger */
+  --danger: #dc2626; /* mantém consistente com o root */
+  --danger-foreground: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-foreground: var(--tertiary-foreground);
+  --color-neutral: var(--neutral);
+  --color-neutral-foreground: var(--neutral-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
