@@ -1,4 +1,5 @@
 import { withDB } from "@/lib/mongoose";
+import { requireSubscription } from "@/lib/require-subscription";
 import { getCompletedAdsReport } from "@/services/ads-report-service";
 import { parseDateRange } from "@/services/parse-date-range-service";
 import { getOrdersInRange } from "@/services/orders-service";
@@ -17,9 +18,13 @@ export async function GET(req: Request): Promise<NextResponse> {
     const startDate = url.searchParams.get("startDate");
     const endDate = url.searchParams.get("endDate");
 
-    if (!storeId) {
+    const userId = req.headers.get("x-user-id");
+    if (!userId || !storeId) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
+
+    const denied = await requireSubscription(userId);
+    if (denied) return denied;
 
     const dateRange = parseDateRange(period, startDate, endDate);
     if (!dateRange) {

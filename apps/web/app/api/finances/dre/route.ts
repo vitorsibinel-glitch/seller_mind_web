@@ -1,4 +1,5 @@
 import { withDB } from "@/lib/mongoose";
+import { requireSubscription } from "@/lib/require-subscription";
 import { validateStoreFromRequest } from "@/lib/validate-store-from-request";
 import { OrderModel } from "@workspace/mongodb/models/order";
 import { NextResponse } from "next/server";
@@ -204,7 +205,9 @@ export async function GET(req: Request): Promise<NextResponse> {
     const startDate = url.searchParams.get("startDate") || null;
     const endDate = url.searchParams.get("endDate") || null;
 
-    const { store } = await validateStoreFromRequest(req);
+    const { store, userId } = await validateStoreFromRequest(req);
+    const denied = await requireSubscription(userId);
+    if (denied) return denied;
 
     const { fromDateUtc, toDateUtc } = resolveDREPeriodToUtc({
       period,

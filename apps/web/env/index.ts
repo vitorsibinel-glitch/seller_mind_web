@@ -16,6 +16,10 @@ const envSchema = z.object({
   SP_APPLICATION_ID: z.string().default(""),
   EDUZZ_API_TOKEN: z.string().default(""),
   EDUZZ_WEBHOOK_SECRET: z.string().default(""),
+  ASAAS_API_KEY: z.string().default(""),
+  ASAAS_WEBHOOK_TOKEN: z.string().default(""),
+  BILLING_GATEWAY: z.enum(["eduzz", "asaas"]).default("eduzz"),
+  CRON_SECRET: z.string().default(""),
   NODE_ENV: z.enum(["development", "production", "test"]).default("production"),
 });
 

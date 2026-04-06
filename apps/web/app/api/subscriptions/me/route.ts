@@ -26,6 +26,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Assinatura não encontrada" }, { status: 404 });
     }
 
-    return NextResponse.json({ subscription });
+    return NextResponse.json({ data: subscription });
   });
 }

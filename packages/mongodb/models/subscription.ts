@@ -31,6 +31,12 @@ export interface Subscription {
   eduzzSubscriptionId?: string;
   retryCount: number;
   lastPaymentAttempt?: Date;
+  gateway?: "eduzz" | "asaas"
+  asaasSubscriptionId?: string
+  gracePeriodEnd?: Date
+  tolerancePeriodEnd?: Date
+  upgradeFromPlanId?: Types.ObjectId
+  upgradedAt?: Date
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,6 +73,12 @@ const subscriptionSchema = new mongoose.Schema<SubscriptionDocument>(
     eduzzSubscriptionId: { type: String },
     retryCount: { type: Number, default: 0 },
     lastPaymentAttempt: { type: Date },
+    gateway: { type: String, enum: ["eduzz", "asaas"] },
+    asaasSubscriptionId: { type: String },
+    gracePeriodEnd: { type: Date },
+    tolerancePeriodEnd: { type: Date },
+    upgradeFromPlanId: { type: mongoose.Schema.Types.ObjectId, ref: "Plan" },
+    upgradedAt: { type: Date },
   },
   {
     timestamps: true,
@@ -77,6 +89,10 @@ subscriptionSchema.index({ billingAccountId: 1, status: 1 });
 subscriptionSchema.index({ status: 1, nextBillingDate: 1 });
 subscriptionSchema.index({ status: 1, currentPeriodEnd: 1 });
 subscriptionSchema.index({ eduzzSubscriptionId: 1 });
+subscriptionSchema.index({ asaasSubscriptionId: 1 });
+subscriptionSchema.index({ gateway: 1, status: 1 });
+subscriptionSchema.index({ status: 1, trialEnd: 1 });
+subscriptionSchema.index({ status: 1, tolerancePeriodEnd: 1 });
 
 export const SubscriptionModel: Model<SubscriptionDocument> =
   (mongoose.models.Subscription as Model<SubscriptionDocument>) ||

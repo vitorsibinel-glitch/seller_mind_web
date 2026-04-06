@@ -1,7 +1,7 @@
 "use client";
 
 import { useGet } from "@/hooks/use-api";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Check, Rocket, Star, Zap, ArrowRight } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
@@ -9,6 +9,7 @@ import type { Plan } from "@workspace/mongodb/models/plan";
 import { Button } from "@workspace/ui/components/button";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
+import type { BillingAccount } from "@workspace/mongodb/models/billing-account";
 
 interface PlanWithId extends Plan {
   _id: string;
@@ -16,6 +17,10 @@ interface PlanWithId extends Plan {
 
 interface PlansResponse {
   plans: PlanWithId[];
+}
+
+interface MeResponse {
+  user: { billingAccount?: Pick<BillingAccount, "gateway"> };
 }
 
 type Billing = "monthly" | "annual";
@@ -27,7 +32,7 @@ function PlanCard({
 }: {
   plan: PlanWithId;
   billing: Billing;
-  onSelect: (slug: string) => void;
+  onSelect: (plan: PlanWithId) => void;
 }) {
   const price =
     billing === "monthly"
@@ -140,7 +145,7 @@ function PlanCard({
       <div className="p-6 pt-0">
         <Button
           type="button"
-          onClick={() => onSelect(plan.slug)}
+          onClick={() => onSelect(plan)}
           className={cn(
             "w-full rounded-xl py-2.5 text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2",
             isPopular
@@ -182,8 +187,13 @@ function PlanSkeleton() {
 
 export default function PlansPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, fetchUser } = useAuth();
   const [billing, setBilling] = useState<Billing>("monthly");
+
+  // mode=upgrade: exibe apenas o plano recomendado, sem listar todos
+  const upgradeMode = searchParams.get("mode") === "upgrade";
+  const recommendedSlug = searchParams.get("recommended") ?? "";
 
   useEffect(() => {
     fetchUser();
@@ -195,14 +205,39 @@ export default function PlansPage() {
 
   const { data, isLoading } = useGet<PlansResponse>("/api/plans");
 
-  const allPlans = data?.plans ?? [];
-  const basicPlans = allPlans.filter((p) => p.tier === "basic");
-  const advancedPlans = allPlans.filter((p) => p.tier === "advanced");
+  // Busca o gateway do billing account do usuário para determinar qual
+  // fluxo de checkout usar. Clientes Eduzz existentes têm gateway="eduzz".
+  const { data: meData } = useGet<MeResponse>("/api/users/me");
+  const gateway = meData?.user?.billingAccount?.gateway ?? "eduzz";
 
-  const handleSelectPlan = async (slug: string) => {
+  const allPlans = data?.plans ?? [];
+
+  // Em modo upgrade, exibe apenas o plano recomendado pelo banner
+  const visiblePlans = upgradeMode && recommendedSlug
+    ? allPlans.filter((p) => p.slug === recommendedSlug)
+    : allPlans;
+
+  const basicPlans = visiblePlans.filter((p) => p.tier === "basic");
+  const advancedPlans = visiblePlans.filter((p) => p.tier === "advanced");
+
+  const handleSelectPlan = async (plan: PlanWithId) => {
+    const slug = plan.slug;
+
+    if (gateway === "asaas") {
+      // Novos clientes: vai para a tela de seleção de método de pagamento
+      const price =
+        billing === "monthly" ? plan.prices.monthly : plan.prices.annual;
+      router.push(
+        `/checkout/asaas?plan=${slug}&cycle=${billing}&planName=${encodeURIComponent(plan.name)}&price=${price}`,
+      );
+      return;
+    }
+
+    // Clientes Eduzz existentes: fluxo original inalterado
     try {
       const res = await fetch(
         `/api/checkout/eduzz?planSlug=${slug}&billingCycle=${billing}`,
+        { credentials: "include" },
       );
       const data = await res.json();
 
@@ -223,10 +258,12 @@ export default function PlansPage() {
         <div className="max-w-7xl mx-auto flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-lg sm:text-xl font-bold text-foreground">
-              Escolha seu plano
+              {upgradeMode ? "Plano recomendado para você" : "Escolha seu plano"}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Todos os planos incluem período de teste gratuito
+              {upgradeMode
+                ? "Baseado no seu volume de vendas deste mês"
+                : "Todos os planos incluem período de teste gratuito"}
             </p>
           </div>
 
@@ -281,7 +318,7 @@ export default function PlansPage() {
                     key={plan._id}
                     plan={plan}
                     billing={billing}
-                    onSelect={handleSelectPlan}
+                    onSelect={(p) => handleSelectPlan(p)}
                   />
                 ))}
           </div>
@@ -318,7 +355,7 @@ export default function PlansPage() {
                     key={plan._id}
                     plan={plan}
                     billing={billing}
-                    onSelect={handleSelectPlan}
+                    onSelect={(p) => handleSelectPlan(p)}
                   />
                 ))}
           </div>

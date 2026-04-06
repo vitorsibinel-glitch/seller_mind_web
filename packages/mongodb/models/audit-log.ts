@@ -33,6 +33,20 @@ export enum AuditAction {
   PLAN_CREATED = "plan.created",
   PLAN_UPDATED = "plan.updated",
 
+  // Trial / Tolerance lifecycle
+  TRIAL_GRACE_STARTED = "trial.grace_started",
+  TRIAL_EXPIRED = "trial.expired",
+  TOLERANCE_STARTED = "tolerance.started",
+  TOLERANCE_EXPIRED = "tolerance.expired",
+  SUBSCRIPTION_BLOCKED = "subscription.blocked",
+
+  // Partner
+  PARTNER_REFERRAL_CREATED = "partner.referral_created",
+  PARTNER_PAYOUT_PROCESSED = "partner.payout_processed",
+
+  // Admin overrides
+  ADMIN_SUBSCRIPTION_OVERRIDE = "admin.subscription.override",
+
   // Cron
   CRON_BILLING_STARTED = "cron.billing.started",
   CRON_BILLING_COMPLETED = "cron.billing.completed",

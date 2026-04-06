@@ -1,6 +1,7 @@
 "use client";
 
 import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
+import { TrialCountdown } from "@/components/trial-countdown";
 import type { ReactNode } from "react";
 
 interface SubscriptionGuardProps {
@@ -12,8 +13,14 @@ export function SubscriptionGuard({
   children,
   fallback,
 }: SubscriptionGuardProps) {
-  const { isCheckingSubscription, hasActiveSubscription } =
-    useSubscriptionGuard();
+  const {
+    isCheckingSubscription,
+    hasActiveSubscription,
+    isInGrace,
+    isInTolerance,
+    gracePeriodEnd,
+    tolerancePeriodEnd,
+  } = useSubscriptionGuard();
 
   if (isCheckingSubscription) {
     return (
@@ -29,5 +36,15 @@ export function SubscriptionGuard({
     return null;
   }
 
-  return <>{children}</>;
+  const deadline = isInGrace ? gracePeriodEnd : isInTolerance ? tolerancePeriodEnd : undefined;
+  const countdownVariant = isInTolerance ? "payment" : "trial";
+
+  return (
+    <>
+      {deadline && (
+        <TrialCountdown deadline={deadline} variant={countdownVariant} />
+      )}
+      {children}
+    </>
+  );
 }
