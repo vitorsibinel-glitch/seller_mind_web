@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { Input } from "@workspace/ui/components/input";
 import { Button } from "@workspace/ui/components/button";
@@ -24,6 +25,10 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
+  ShoppingCart,
+  Store,
+  Users,
+  Zap,
 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { useDelete, useGet, usePatch } from "@/hooks/use-api";
@@ -95,6 +100,98 @@ const statusConfig: Record<
   },
 };
 
+interface UsageResponse {
+  usage: { ordersThisPeriod: number; storesCount: number; usersCount: number };
+  limits: { maxOrders: number | null; stores: number | null; users: number | null; gamificationBonus: number | null };
+}
+
+function UsageBar({ used, max }: { used: number; max: number | null }) {
+  if (!max) return null;
+  const pct = Math.min(100, Math.round((used / max) * 100));
+  const color = pct >= 90 ? "bg-destructive" : pct >= 70 ? "bg-warning" : "bg-primary";
+  return (
+    <div className="w-full mt-1">
+      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+        <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
+      </div>
+      <span className="text-xs text-muted-foreground">{pct}%</span>
+    </div>
+  );
+}
+
+function PlanUsageCard({ subscription }: { subscription: SubscriptionInfoDTO }) {
+  const { data, isLoading } = useGet<UsageResponse>("/api/subscriptions/usage");
+
+  const limits = subscription.planId.limits;
+
+  const items = [
+    {
+      icon: ShoppingCart,
+      label: "Pedidos/período",
+      used: data?.usage.ordersThisPeriod ?? null,
+      max: data?.limits.maxOrders ?? null,
+      fallback: limits.maxOrders ? limits.maxOrders.toLocaleString("pt-BR") : "Ilimitado",
+    },
+    {
+      icon: Store,
+      label: "Lojas",
+      used: data?.usage.storesCount ?? null,
+      max: data?.limits.stores ?? null,
+      fallback: limits.stores ? String(limits.stores) : "Ilimitado",
+    },
+    {
+      icon: Users,
+      label: "Usuários",
+      used: data?.usage.usersCount ?? null,
+      max: data?.limits.users ?? null,
+      fallback: limits.users ? String(limits.users) : "Ilimitado",
+    },
+    ...(limits.gamificationBonus
+      ? [{ icon: Zap, label: "Bônus Gamificação", used: null, max: null, fallback: `+${limits.gamificationBonus}%` }]
+      : []),
+  ];
+
+  return (
+    <div className="w-full max-w-4xl mx-auto px-4">
+      <Card className="shadow-md rounded-2xl overflow-hidden">
+        <div className="px-6 pt-6 pb-4 border-b border-border/60">
+          <h3 className="text-base font-semibold">Uso do Plano</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Plano {subscription.planId.name} — período atual
+          </p>
+        </div>
+        <CardContent className="p-6">
+          {isLoading ? (
+            <div className="flex justify-center py-4">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {items.map(({ icon: Icon, label, used, max, fallback }) => (
+                <div
+                  key={label}
+                  className="flex flex-col items-center gap-1 p-3 rounded-xl bg-muted/50 text-center"
+                >
+                  <Icon size={18} className="text-primary" />
+                  <span className="text-lg font-bold tabular-nums">
+                    {used !== null && max !== null
+                      ? `${used.toLocaleString("pt-BR")} / ${max.toLocaleString("pt-BR")}`
+                      : used !== null
+                        ? used.toLocaleString("pt-BR")
+                        : fallback}
+                  </span>
+                  <span className="text-xs text-muted-foreground">{label}</span>
+                  {used !== null && <UsageBar used={used} max={max} />}
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 function SubscriptionSection({
   subscription,
   refetch,
@@ -102,6 +199,7 @@ function SubscriptionSection({
   subscription: SubscriptionInfoDTO;
   refetch: () => void;
 }) {
+  const router = useRouter();
   const [cancelDialogOpen, setCancelDialogOpen] = React.useState(false);
   const [reactivateDialogOpen, setReactivateDialogOpen] = React.useState(false);
   const config = statusConfig[subscription.status];
@@ -127,14 +225,21 @@ function SubscriptionSection({
   const isReactivatable = subscription.status === SubscriptionStatus.CANCELED;
 
   const { mutate: reactivateSubscription, isPending: isReactivating } =
-    usePatch({
-      onSuccess: async () => {
-        toast.success("Assinatura reativada com sucesso!");
+    usePatch<{ checkoutUrl?: string; redirectTo?: string }>({
+      onSuccess: async (data) => {
         setReactivateDialogOpen(false);
+        if (data?.checkoutUrl) {
+          window.location.href = data.checkoutUrl;
+          return;
+        }
+        if (data?.redirectTo) {
+          router.push(data.redirectTo);
+          return;
+        }
+        toast.success("Assinatura reativada com sucesso!");
         await refetch();
       },
       onError: () => {
-        console.error("Erro ao reativar assinatura");
         toast.error("Erro ao reativar assinatura. Tente novamente.");
       },
     });
@@ -728,10 +833,13 @@ export default function SettingsProfile() {
           <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
         </div>
       ) : subscription ? (
-        <SubscriptionSection
-          subscription={subscription}
-          refetch={refetchSubscription}
-        />
+        <>
+          <PlanUsageCard subscription={subscription} />
+          <SubscriptionSection
+            subscription={subscription}
+            refetch={refetchSubscription}
+          />
+        </>
       ) : null}
     </div>
   );

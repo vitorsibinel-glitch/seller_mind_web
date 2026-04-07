@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 
 import "./models/ads-report";
+import "./models/admin-membership";
+import "./models/partner";
+import "./models/partner-referral";
 import "./models/audit-log";
 import "./models/plan";
 import "./models/store";

@@ -68,8 +68,8 @@ export function usePut<T>(url: string, options = {}) {
   });
 }
 
-export function usePatch<T>(options: {
-  onSuccess: () => void;
+export function usePatch<T = unknown>(options: {
+  onSuccess: (data: T) => void;
   onError: () => void;
 }) {
   const { handleError } = useErrorHandler();

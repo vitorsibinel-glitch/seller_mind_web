@@ -2,8 +2,26 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useGet } from "./use-api";
 import { useEffect } from "react";
 
-interface SubscriptionStatusResponse {
-  hasActiveSubscription: boolean;
+export type SubscriptionAccessStatus =
+  | "trialing"
+  | "trial_grace"
+  | "active"
+  | "past_due_tolerance"
+  | "expired"
+  | "past_due"
+  | "suspended"
+  | "canceled"
+  | "no_account"
+  | "no_subscription";
+
+export interface SubscriptionStatusResponse {
+  hasAccess: boolean;
+  status: SubscriptionAccessStatus;
+  planId?: string | null;
+  trialEnd?: string;
+  gracePeriodEnd?: string;
+  tolerancePeriodEnd?: string;
+  currentPeriodEnd?: string;
 }
 
 export function useSubscriptionGuard() {
@@ -13,24 +31,39 @@ export function useSubscriptionGuard() {
 
   const { data, isPending, isError } = useGet<SubscriptionStatusResponse>(
     "/api/subscriptions/status",
-    {
-      staleTime: justSubscribed ? 0 : undefined,
-    },
+    { staleTime: justSubscribed ? 0 : undefined },
   );
 
-  useEffect(() => {
-    if (isError || isPending || justSubscribed) return;
+  const status = data?.status;
 
-    if (!data?.hasActiveSubscription) {
-      const selectedPlan = localStorage.getItem("selected_plan");
-      router.replace(selectedPlan ? "/checkout" : "/plans");
+  // Períodos de tolerância — usuário mantém acesso mas vê aviso
+  const isInGrace = status === "trial_grace";
+  const isInTolerance = status === "past_due_tolerance";
+  const isInWarningPeriod = isInGrace || isInTolerance;
+
+  const hasAccess = justSubscribed ? true : (data?.hasAccess ?? false);
+
+  useEffect(() => {
+    if (isPending || isError || justSubscribed) return;
+    // Não redireciona durante períodos de tolerância — apenas mostra aviso
+    if (!hasAccess && !isInWarningPeriod) {
+      router.replace("/plans");
     }
-  }, [data, isPending, isError, router, justSubscribed]);
+  }, [hasAccess, isPending, isError, isInWarningPeriod, justSubscribed, router]);
 
   return {
     isCheckingSubscription: isPending,
-    hasActiveSubscription: justSubscribed
-      ? true
-      : (data?.hasActiveSubscription ?? false),
+    hasActiveSubscription: hasAccess,
+    isInGrace,
+    isInTolerance,
+    isInWarningPeriod,
+    gracePeriodEnd: data?.gracePeriodEnd
+      ? new Date(data.gracePeriodEnd)
+      : undefined,
+    tolerancePeriodEnd: data?.tolerancePeriodEnd
+      ? new Date(data.tolerancePeriodEnd)
+      : undefined,
+    trialEnd: data?.trialEnd ? new Date(data.trialEnd) : undefined,
+    status: data?.status,
   };
 }

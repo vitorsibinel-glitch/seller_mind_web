@@ -14,6 +14,7 @@ import { useGlobalFilter } from "@/contexts/global-filter-context";
 import type { GamificationResponseDTO } from "@/dtos/gamification-response-dto";
 import { useAuth } from "@/contexts/auth-context";
 import { SubscriptionGuard } from "@/components/subscription-guard";
+import { UpgradeBanner } from "@/components/upgrade-banner";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { fetchUser } = useAuth();
@@ -61,6 +62,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <AppSidebar variant="inset" />
           <SidebarInset>
             <Header gamification={gamificationData} />
+            <UpgradeBanner />
             <div className="flex flex-1 flex-col">
               <div className="@container/main flex flex-1 flex-col gap-2">
                 <main className="flex flex-col gap-4 p-4 md:gap-6 md:py-6 lg:px-6 bg-card/10">

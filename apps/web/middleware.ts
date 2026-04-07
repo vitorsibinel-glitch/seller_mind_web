@@ -18,7 +18,7 @@ export async function middleware(req: NextRequest) {
   );
 
   // Define rotas protegidas de página
-  const protectedPageRoutes = ["/dashboard"];
+  const protectedPageRoutes = ["/dashboard", "/admin"];
   const isProtectedPage = protectedPageRoutes.some((route) =>
     pathname.startsWith(route),
   );
@@ -46,6 +46,12 @@ export async function middleware(req: NextRequest) {
     "/api/subscriptions/me",
     "/api/plans",
     "/api/checkout/eduzz",
+    "/api/checkout/asaas",
+    "/api/subscriptions/upgrade-recommendation",
+    "/api/analytics",
+    "/api/admin",
+    // /api/webhooks/asaas é intencionalmente AUSENTE: validação feita
+    // pelo token Asaas internamente no handler, não pelo JWT.
   ];
   const isProtectedApi = protectedApiRoutes.some((route) =>
     pathname.startsWith(route),
@@ -164,5 +170,10 @@ export const config = {
     "/api/plans",
     "/api/plans/:path*",
     "/api/checkout/eduzz",
+    "/api/checkout/asaas",
+    "/api/analytics/:path*",
+    "/admin/:path*",
+    "/api/admin/:path*",
+    // /api/webhooks/asaas NÃO está no matcher — é pública por design.
   ],
 };

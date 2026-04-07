@@ -1,4 +1,8 @@
 import { withDB } from "@/lib/mongoose";
+<<<<<<< HEAD
+=======
+import { requireSubscription } from "@/lib/require-subscription";
+>>>>>>> origin/feat/fases-1-4
 import { getCompletedAdsReport } from "@/services/ads-report-service";
 import { parseDateRange } from "@/services/parse-date-range-service";
 import { getOrdersInRange } from "@/services/orders-service";
@@ -17,10 +21,21 @@ export async function GET(req: Request): Promise<NextResponse> {
     const startDate = url.searchParams.get("startDate");
     const endDate = url.searchParams.get("endDate");
 
+<<<<<<< HEAD
     if (!storeId) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
+=======
+    const userId = req.headers.get("x-user-id");
+    if (!userId || !storeId) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
+
+    const denied = await requireSubscription(userId);
+    if (denied) return denied;
+
+>>>>>>> origin/feat/fases-1-4
     const dateRange = parseDateRange(period, startDate, endDate);
     if (!dateRange) {
       return NextResponse.json({ error: "Data inválida" }, { status: 400 });

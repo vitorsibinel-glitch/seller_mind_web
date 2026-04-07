@@ -2,7 +2,12 @@ import { withDB } from "@/lib/mongoose";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { BillingAccountModel } from "@workspace/mongodb/models/billing-account";
+<<<<<<< HEAD
 import { SubscriptionModel, SubscriptionStatus } from "@workspace/mongodb/models/subscription";
+=======
+import { SubscriptionModel } from "@workspace/mongodb/models/subscription";
+import { checkAccess } from "@workspace/billing";
+>>>>>>> origin/feat/fases-1-4
 
 export async function GET(req: NextRequest) {
   return withDB(async () => {
@@ -24,6 +29,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ hasAccess: false, status: "no_subscription" });
     }
 
+<<<<<<< HEAD
     const now = new Date();
 
     if (
@@ -52,6 +58,23 @@ export async function GET(req: NextRequest) {
       hasAccess: false,
       status: subscription.status,
       planId: subscription.planId || null,
+=======
+    const result = checkAccess(subscription as any);
+
+    return NextResponse.json({
+      hasAccess: result.hasAccess,
+      status: result.status,
+      planId: result.planId ?? null,
+      // Campos de tolerância — presentes apenas quando relevantes
+      ...(result.trialEnd ? { trialEnd: result.trialEnd } : {}),
+      ...(result.gracePeriodEnd ? { gracePeriodEnd: result.gracePeriodEnd } : {}),
+      ...(result.tolerancePeriodEnd
+        ? { tolerancePeriodEnd: result.tolerancePeriodEnd }
+        : {}),
+      ...(result.currentPeriodEnd
+        ? { currentPeriodEnd: result.currentPeriodEnd }
+        : {}),
+>>>>>>> origin/feat/fases-1-4
     });
   });
 }

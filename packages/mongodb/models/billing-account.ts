@@ -9,6 +9,9 @@ export interface BillingAccount {
   phone?: string;
   metadata: Record<string, unknown>;
   isActive: boolean;
+  gateway?: "eduzz" | "asaas"
+  asaasCustomerId?: string
+  referralCode?: string
   createdAt: Date;
   updatedAt: Date;
 }
@@ -28,6 +31,9 @@ const billingAccountSchema = new mongoose.Schema<BillingAccountDocument>(
     phone: { type: String },
     metadata: { type: mongoose.Schema.Types.Mixed, default: {} },
     isActive: { type: Boolean, default: true },
+    gateway: { type: String, enum: ["eduzz", "asaas"] },
+    asaasCustomerId: { type: String },
+    referralCode: { type: String },
   },
   {
     timestamps: true,
@@ -36,6 +42,7 @@ const billingAccountSchema = new mongoose.Schema<BillingAccountDocument>(
 
 billingAccountSchema.index({ userId: 1 });
 billingAccountSchema.index({ document: 1 });
+billingAccountSchema.index({ asaasCustomerId: 1 });
 
 export const BillingAccountModel: Model<BillingAccountDocument> =
   (mongoose.models.BillingAccount as Model<BillingAccountDocument>) ||
