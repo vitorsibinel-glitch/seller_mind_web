@@ -1,9 +1,6 @@
 import { useTry } from "@/hooks/use-try";
 import { withDB } from "@/lib/mongoose";
-<<<<<<< HEAD
-=======
 import { requireSubscription } from "@/lib/require-subscription";
->>>>>>> origin/feat/fases-1-4
 import { validateStoreFromRequest } from "@/lib/validate-store-from-request";
 import { createInvoiceSchema } from "@/schemas/invoiceSchema";
 import { getPeriod, PeriodEnum } from "@/utils/get-period";
@@ -21,11 +18,8 @@ export async function GET(req: Request): Promise<NextResponse> {
     const endDate = url.searchParams.get("endDate");
 
     const { store, userId } = await validateStoreFromRequest(req);
-<<<<<<< HEAD
-=======
     const denied = await requireSubscription(userId);
     if (denied) return denied;
->>>>>>> origin/feat/fases-1-4
 
     let fromDateUtc: Date | null = null;
     let toDateUtc: Date | null = null;

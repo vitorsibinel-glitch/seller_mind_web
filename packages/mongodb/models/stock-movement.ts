@@ -29,7 +29,7 @@ export interface StockMovement {
   confirmedAt?: Date;
 }
 
-interface StockMovementDocument extends StockMovement, Document {}
+export interface StockMovementDocument extends StockMovement, Document {}
 
 const stockMovementSchema = new Schema<StockMovementDocument>(
   {

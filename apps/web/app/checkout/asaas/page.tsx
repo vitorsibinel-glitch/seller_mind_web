@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CreditCard, QrCode, Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
@@ -11,6 +11,14 @@ type PaymentMethod = "credit_card" | "pix";
 type BillingCycle = "monthly" | "annual";
 
 export default function CheckoutAsaasPage() {
+  return (
+    <Suspense>
+      <CheckoutAsaasContent />
+    </Suspense>
+  );
+}
+
+function CheckoutAsaasContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 

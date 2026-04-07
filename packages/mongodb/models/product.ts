@@ -44,7 +44,7 @@ export interface Product {
   priceHistory?: PriceHistoryEntry[];
 }
 
-interface ProductDocument extends Product, Document {}
+export interface ProductDocument extends Product, Document {}
 
 const priceHistorySchema = new Schema<PriceHistoryEntry>(
   {

@@ -11,7 +11,7 @@ export interface Goal {
   revenue: number;
 }
 
-interface GoalDocument extends Goal, Document {
+export interface GoalDocument extends Goal, Document {
   _id: Types.ObjectId;
 }
 

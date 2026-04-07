@@ -17,7 +17,7 @@ export interface PartnerReferral {
   updatedAt: Date;
 }
 
-interface PartnerReferralDocument extends PartnerReferral, Document {}
+export interface PartnerReferralDocument extends PartnerReferral, Document {}
 
 const partnerReferralSchema = new mongoose.Schema<PartnerReferralDocument>(
   {

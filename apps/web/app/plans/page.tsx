@@ -2,7 +2,7 @@
 
 import { useGet } from "@/hooks/use-api";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Check, Rocket, Star, Zap, ArrowRight } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
 import type { Plan } from "@workspace/mongodb/models/plan";
@@ -186,6 +186,14 @@ function PlanSkeleton() {
 }
 
 export default function PlansPage() {
+  return (
+    <Suspense>
+      <PlansContent />
+    </Suspense>
+  );
+}
+
+function PlansContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, fetchUser } = useAuth();

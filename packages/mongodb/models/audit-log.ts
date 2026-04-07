@@ -72,7 +72,7 @@ export interface AuditLog {
   userAgent?: string;
 }
 
-interface AuditLogDocument extends AuditLog, Document {
+export interface AuditLogDocument extends AuditLog, Document {
   createdAt: Date;
 }
 

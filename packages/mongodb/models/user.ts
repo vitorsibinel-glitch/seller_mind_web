@@ -12,7 +12,7 @@ export interface User {
   phone: string;
 }
 
-interface UserDocument extends User, Document {}
+export interface UserDocument extends User, Document {}
 
 const userSchema = new mongoose.Schema<UserDocument>(
   {

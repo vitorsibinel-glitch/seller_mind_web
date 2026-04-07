@@ -41,7 +41,7 @@ export interface Plan {
   };
 }
 
-interface PlanDocument extends Plan, Document {
+export interface PlanDocument extends Plan, Document {
   createdAt: Date;
   updatedAt: Date;
 }

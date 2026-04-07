@@ -14,7 +14,7 @@ export interface Partner {
   updatedAt: Date;
 }
 
-interface PartnerDocument extends Partner, Document {}
+export interface PartnerDocument extends Partner, Document {}
 
 const partnerSchema = new mongoose.Schema<PartnerDocument>(
   {

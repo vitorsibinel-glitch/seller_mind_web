@@ -41,7 +41,7 @@ export interface Subscription {
   updatedAt: Date;
 }
 
-interface SubscriptionDocument extends Subscription, Document {}
+export interface SubscriptionDocument extends Subscription, Document {}
 
 const subscriptionSchema = new mongoose.Schema<SubscriptionDocument>(
   {

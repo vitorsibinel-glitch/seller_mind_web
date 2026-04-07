@@ -26,10 +26,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Assinatura não encontrada" }, { status: 404 });
     }
 
-<<<<<<< HEAD
-    return NextResponse.json({ subscription });
-=======
     return NextResponse.json({ data: subscription });
->>>>>>> origin/feat/fases-1-4
   });
 }

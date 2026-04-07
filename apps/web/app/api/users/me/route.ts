@@ -41,12 +41,9 @@ export async function GET(req: Request): Promise<NextResponse> {
       user: {
         ...userFromId,
         planName: (subscription?.planId as any)?.name ?? null,
-<<<<<<< HEAD
-=======
         billingAccount: billingAccount
           ? { gateway: billingAccount.gateway ?? null }
           : null,
->>>>>>> origin/feat/fases-1-4
       },
     });
   });
