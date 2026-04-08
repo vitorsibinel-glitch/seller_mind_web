@@ -31,6 +31,7 @@ export async function GET(req: NextRequest) {
       hasAccess: result.hasAccess,
       status: result.status,
       planId: result.planId ?? null,
+      // Campos de tolerância — presentes apenas quando relevantes
       ...(result.trialEnd ? { trialEnd: result.trialEnd } : {}),
       ...(result.gracePeriodEnd ? { gracePeriodEnd: result.gracePeriodEnd } : {}),
       ...(result.tolerancePeriodEnd

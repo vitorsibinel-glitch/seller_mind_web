@@ -20,7 +20,8 @@ export async function GET(req: NextRequest) {
       billingAccountId: billingAccount._id,
     })
       .sort({ createdAt: -1 })
-      .populate("planId");
+      .populate("planId")
+      .lean();
 
     if (!subscription) {
       return NextResponse.json({ message: "Assinatura não encontrada" }, { status: 404 });

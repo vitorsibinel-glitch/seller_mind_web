@@ -1,6 +1,7 @@
 import { withDB } from "@/lib/mongoose";
 import { NextResponse } from "next/server";
 import argon2 from "argon2";
+import mongoose from "mongoose";
 import { signupSchema } from "@/schemas/signupSchema";
 import { UserModel } from "@workspace/mongodb/models/user";
 import { BillingAccountModel } from "@workspace/mongodb/models/billing-account";
@@ -39,31 +40,54 @@ export async function POST(req: Request) {
 
     const gateway = env.BILLING_GATEWAY;
 
-    const user = await UserModel.create({
-      firstName,
-      lastName,
-      email,
-      passwordHash,
-    });
+    // Transação garante atomicidade: ou os três documentos são criados,
+    // ou nenhum é. Requer MongoDB com replica set (Atlas ou rs local).
+    const session = await mongoose.startSession();
+    let userId: unknown;
 
-    const billingAccount = await BillingAccountModel.create({
-      userId: user._id,
-      name: `${firstName} ${lastName}`,
-      email,
-      document: "",
-      gateway,
-      referralCode: referralCode ?? null,
-    });
+    try {
+      await session.withTransaction(async () => {
+        const users = await UserModel.create(
+          [{ firstName, lastName, email, passwordHash }],
+          { session },
+        );
+        const user = users[0]!;
 
-    await SubscriptionModel.create({
-      billingAccountId: billingAccount._id,
-      status: SubscriptionStatus.TRIALING,
-      gateway,
-      trialEnd,
-    });
+        const billingAccounts = await BillingAccountModel.create(
+          [
+            {
+              userId: user._id,
+              name: `${firstName} ${lastName}`,
+              email,
+              document: "",
+              gateway,
+              referralCode: referralCode ?? null,
+            },
+          ],
+          { session },
+        );
+        const billingAccount = billingAccounts[0]!;
+
+        await SubscriptionModel.create(
+          [
+            {
+              billingAccountId: billingAccount._id,
+              status: SubscriptionStatus.TRIALING,
+              gateway,
+              trialEnd,
+            },
+          ],
+          { session },
+        );
+
+        userId = user._id;
+      });
+    } finally {
+      await session.endSession();
+    }
 
     return NextResponse.json(
-      { message: "Usuário registrado com sucesso!", userId: user._id },
+      { message: "Usuário registrado com sucesso!", userId },
       { status: 201 },
     );
   });

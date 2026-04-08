@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import type { Document, Model } from "mongoose";
 
+export type UserRole = "user" | "manager" | "creator";
+
 export interface User {
   firstName: string;
   lastName: string;
@@ -10,6 +12,7 @@ export interface User {
   isStoreIntegrated: boolean;
   document: string;
   phone: string;
+  role: UserRole;
 }
 
 export interface UserDocument extends User, Document {}
@@ -24,6 +27,7 @@ const userSchema = new mongoose.Schema<UserDocument>(
     phone: { type: String },
     document: { type: String },
     isStoreIntegrated: { type: Boolean, default: false },
+    role: { type: String, enum: ["user", "manager", "creator"], default: "user" },
   },
   { timestamps: true },
 );

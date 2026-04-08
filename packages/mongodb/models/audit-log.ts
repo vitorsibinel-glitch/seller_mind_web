@@ -43,6 +43,16 @@ export enum AuditAction {
   // Partner
   PARTNER_REFERRAL_CREATED = "partner.referral_created",
   PARTNER_PAYOUT_PROCESSED = "partner.payout_processed",
+  ADMIN_PARTNER_CREATED = "admin.partner.created",
+  ADMIN_PARTNER_UPDATED = "admin.partner.updated",
+  ADMIN_PARTNER_DELETED = "admin.partner.deleted",
+  PAYOUT_REQUESTED = "payout.requested",
+  PAYOUT_COMPLETED = "payout.completed",
+
+  // Admin user management
+  ADMIN_USER_ROLE_CHANGED = "admin.user.role_changed",
+  ADMIN_STORE_ACCESS_GRANTED = "admin.store.access_granted",
+  ADMIN_STORE_ACCESS_REVOKED = "admin.store.access_revoked",
 
   // Admin overrides
   ADMIN_SUBSCRIPTION_OVERRIDE = "admin.subscription.override",

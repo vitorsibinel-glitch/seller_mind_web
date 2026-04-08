@@ -7,4 +7,5 @@ export interface UserDTO {
   document: string;
   avatarUrl?: string;
   planName?: string;
+  role: "user" | "manager" | "creator";
 }
