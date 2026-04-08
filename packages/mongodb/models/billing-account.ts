@@ -16,7 +16,7 @@ export interface BillingAccount {
   updatedAt: Date;
 }
 
-interface BillingAccountDocument extends BillingAccount, Document {}
+export interface BillingAccountDocument extends BillingAccount, Document {}
 
 const billingAccountSchema = new mongoose.Schema<BillingAccountDocument>(
   {

@@ -10,7 +10,7 @@ export interface AdminMembership {
   updatedAt: Date;
 }
 
-interface AdminMembershipDocument extends AdminMembership, Document {}
+export interface AdminMembershipDocument extends AdminMembership, Document {}
 
 const adminMembershipSchema = new mongoose.Schema<AdminMembershipDocument>(
   {

@@ -29,7 +29,7 @@ export interface BillingInvoice {
   updatedAt: Date;
 }
 
-interface BillingInvoiceDocument extends BillingInvoice, Document {}
+export interface BillingInvoiceDocument extends BillingInvoice, Document {}
 
 const billingInvoiceSchema = new mongoose.Schema<BillingInvoiceDocument>(
   {

@@ -47,12 +47,13 @@ export async function POST(req: Request) {
 
     try {
       await session.withTransaction(async () => {
-        const [user] = await UserModel.create(
+        const users = await UserModel.create(
           [{ firstName, lastName, email, passwordHash }],
           { session },
         );
+        const user = users[0]!;
 
-        const [billingAccount] = await BillingAccountModel.create(
+        const billingAccounts = await BillingAccountModel.create(
           [
             {
               userId: user._id,
@@ -65,6 +66,7 @@ export async function POST(req: Request) {
           ],
           { session },
         );
+        const billingAccount = billingAccounts[0]!;
 
         await SubscriptionModel.create(
           [

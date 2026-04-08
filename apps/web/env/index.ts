@@ -3,6 +3,7 @@ import { z } from "zod";
 const envSchema = z.object({
   DATABASE_URL: z.string().default(""),
   NEXT_PUBLIC_API_URL: z.string().default(""),
+  NEXT_PUBLIC_APP_URL: z.string().default(""),
   API_URL: z.string().default(""),
   RESEND_API_KEY: z.string().default(""),
   JWT_SECRET: z.string().default(""),

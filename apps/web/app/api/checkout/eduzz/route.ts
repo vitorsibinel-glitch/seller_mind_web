@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Salvar o plano e ciclo escolhido na subscription para o webhook saber
-    subscription.planId = plan._id;
+    subscription.planId = plan._id as any;
     subscription.billingCycle = billingCycle as any;
     await subscription.save();
 

@@ -9,7 +9,7 @@ export interface Store {
   taxRate: number;
 }
 
-interface StoreDocument extends Store, Document {
+export interface StoreDocument extends Store, Document {
   _id: Types.ObjectId;
 }
 

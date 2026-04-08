@@ -10,11 +10,13 @@ export interface Partner {
   pixKey?: string;
   notes?: string;
   pendingPayout: number;
+  totalPaid: number;
+  status: "active" | "inactive";
   createdAt: Date;
   updatedAt: Date;
 }
 
-interface PartnerDocument extends Partner, Document {}
+export interface PartnerDocument extends Partner, Document {}
 
 const partnerSchema = new mongoose.Schema<PartnerDocument>(
   {
@@ -32,11 +34,12 @@ const partnerSchema = new mongoose.Schema<PartnerDocument>(
     pixKey: { type: String },
     notes: { type: String },
     pendingPayout: { type: Number, default: 0, min: 0 },
+    totalPaid: { type: Number, default: 0, min: 0 },
+    status: { type: String, enum: ["active", "inactive"], default: "active" },
   },
   { timestamps: true },
 );
 
-partnerSchema.index({ code: 1 }, { unique: true });
 partnerSchema.index({ isActive: 1 });
 
 export const PartnerModel: Model<PartnerDocument> =

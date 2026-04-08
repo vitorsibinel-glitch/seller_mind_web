@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
 
     // Persiste seleção e ID Asaas na Subscription do Mongo.
     // status permanece TRIALING — ativação ocorre apenas no webhook.
-    subscription.planId = plan._id;
+    subscription.planId = plan._id as any;
     subscription.billingCycle = billingCycle as any;
     subscription.gateway = "asaas";
     subscription.asaasSubscriptionId = result.gatewaySubscriptionId;
